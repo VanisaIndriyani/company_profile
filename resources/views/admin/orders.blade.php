@@ -91,6 +91,33 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="orders-title">Daftar Pesanan</div>
+                        <form method="GET" class="mb-4">
+                            <div class="form-row align-items-end">
+                                <div class="col-md-3 mb-2">
+                                    <label for="search_nama">Nama</label>
+                                    <input type="text" name="nama" id="search_nama" class="form-control" value="{{ request('nama') }}" placeholder="Cari nama">
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label for="search_no_meja">No Meja</label>
+                                    <input type="text" name="no_meja" id="search_no_meja" class="form-control" value="{{ request('no_meja') }}" placeholder="No Meja">
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label for="search_status">Status</label>
+                                    <select name="status" id="search_status" class="form-control">
+                                        <option value="">Semua</option>
+                                        <option value="pending" {{ request('status')=='pending'?'selected':'' }}>Pending</option>
+                                        <option value="accepted" {{ request('status')=='accepted'?'selected':'' }}>Accepted</option>
+                                        <option value="rejected" {{ request('status')=='rejected'?'selected':'' }}>Rejected</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <button class="btn btn-primary w-100" type="submit"><i class="fa fa-search"></i> Cari</button>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <a href="{{ route('admin.orders') }}" class="btn btn-secondary w-100">Reset</a>
+                                </div>
+                            </div>
+                        </form>
                         <div class="table-responsive">
                             <table class="table orders-table mb-0">
                                 <thead>

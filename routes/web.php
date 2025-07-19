@@ -94,6 +94,12 @@ Route::middleware(['auth', 'role:manager'])->group(function () {
     Route::put('/manager/stock/{catalog}', [App\Http\Controllers\CatalogController::class, 'updateStock'])->name('manager.stock.update');
 });
 
+Route::middleware(['auth', 'role:super_admin'])->prefix('superadmin')->group(function () {
+    Route::get('dashboard', [App\Http\Controllers\SuperAdminUserController::class, 'dashboard'])->name('superadmin.dashboard');
+    Route::resource('users', App\Http\Controllers\SuperAdminUserController::class);
+    Route::post('users/{user}/reset-password', [App\Http\Controllers\SuperAdminUserController::class, 'resetPassword'])->name('users.reset_password');
+});
+
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');

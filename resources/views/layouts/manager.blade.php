@@ -24,6 +24,10 @@
       padding-top: 20px;
       box-shadow: 2px 0 10px rgba(111, 78, 55, 0.08);
       z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow-y: auto;
     }
     .sidebar .nav-link {
       color: #f5e9da;
@@ -106,7 +110,7 @@
       <!-- Sidebar -->
       <nav class="col-md-2 d-none d-md-block sidebar">
         <div class="navbar-brand">
-          <img src="{{ asset('user/images/icon.png') }}" alt="Logo" class="mb-2 d-block mx-auto">
+          <img src="{{ asset('img/LOGO.jpg') }}" alt="Fourjo Logo" class="mb-2 d-block mx-auto" style="width:70px;border-radius:50%;box-shadow:0 2px 12px #b4845c;background:#fffbe6;padding:6px;">
           <div>Manager Panel</div>
         </div>
         <ul class="nav flex-column">
@@ -140,12 +144,15 @@
               <i class="fa fa-warehouse"></i> Stok Barang
             </a>
           </li>
-          <li class="nav-item mt-4">
-            <a class="nav-link text-danger" href="/logout">
-              <i class="fa fa-sign-out-alt"></i> Logout
-            </a>
-          </li>
         </ul>
+        <div style="flex:1"></div>
+        <div class="p-3 w-100" style="margin-top:auto;">
+          <a href="/logout" onclick="return confirm('Yakin ingin logout?')"
+             class="btn btn-danger btn-block d-flex align-items-center justify-content-center"
+             style="font-size:1.15rem;font-weight:700;border-radius:30px;box-shadow:0 2px 8px #b4845c22;">
+            <i class="fa fa-sign-out-alt mr-2" style="font-size:1.5rem;"></i> Logout
+          </a>
+        </div>
       </nav>
       <!-- Main Content -->
       <main role="main" class="col-md-10 ml-sm-auto px-4 py-4">

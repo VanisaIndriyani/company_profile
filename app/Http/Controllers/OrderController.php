@@ -126,9 +126,19 @@ class OrderController extends Controller
         return view('user.orders', compact('orders', 'nama', 'no_meja'));
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::all();
+        $query = Order::query();
+        if ($request->filled('nama')) {
+            $query->where('nama', 'like', '%' . $request->nama . '%');
+        }
+        if ($request->filled('no_meja')) {
+            $query->where('no_meja', 'like', '%' . $request->no_meja . '%');
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        $orders = $query->orderBy('created_at', 'desc')->get();
         return view('admin.orders', compact('orders'));
     }
 

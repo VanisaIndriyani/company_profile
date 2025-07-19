@@ -18,7 +18,9 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $user = Auth::user();
-            if ($user->role == 'admin') {
+            if ($user->role == 'super_admin') {
+                return redirect()->route('superadmin.dashboard');
+            } else if ($user->role == 'admin') {
                 return redirect()->route('admin.dashboard');
             } elseif ($user->role == 'manager') {
                 return redirect()->route('manager.dashboard');

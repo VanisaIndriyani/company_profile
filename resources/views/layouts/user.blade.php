@@ -40,8 +40,8 @@
 
       <div id="logo" class="pull-left">
         <a href="#hero">
-          <img src="{{asset('user/images/icon.png')}}" style="margin-right:5px"/>
-          <h2 class="d-inline text-light">Fourjoo</h2>
+          <img src="{{ asset('img/LOGO.jpg') }}" alt="Fourjo Logo" style="height:40px;margin-right:8px;vertical-align:middle;"/>
+          <h2 class="d-inline text-light align-middle" style="vertical-align:middle;">Fourjo</h2>
         </a>
       </div>
 
