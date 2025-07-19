@@ -163,19 +163,38 @@ $(function() {
       showAlertModal('Jumlah harus lebih dari 0!');
       return false;
     }
+    console.log('Sending AJAX request to:', form.attr('action'));
+    console.log('Form data:', form.serialize());
     $.ajax({
       url: form.attr('action'),
       method: 'POST',
       data: form.serialize(),
       headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
       success: function(res) {
+        console.log('Success response:', res);
+        // Show success message
+        showAlertModal(res.success || 'Produk berhasil ditambahkan ke keranjang!', true);
+        
+        // Update cart count in header
+        var cartCount = $('a[data-target="#cartModal"] span').length > 0 ? 
+          parseInt($('a[data-target="#cartModal"] span').text()) : 0;
+        cartCount++;
+        
+        if ($('a[data-target="#cartModal"] span').length > 0) {
+          $('a[data-target="#cartModal"] span').text(cartCount);
+        } else {
+          $('a[data-target="#cartModal"]').append('<span style="position:absolute;top:-8px;right:-10px;background:#e74c3c;color:#fff;border-radius:50%;padding:2px 7px;font-size:11px;">' + cartCount + '</span>');
+        }
+        
+        // Update cart modal content
         $.get("{{ route('cart') }}", function(data) {
-          var cartHtml = $(data).find('.container').html();
-          $('#cartModal .modal-body').html(cartHtml);
-          $('#cartModal').modal('show');
+          console.log('Cart response:', data);
+          // The cart route returns the cart_table component directly when called via AJAX
+          $('#cartModal .modal-body').html(data);
         });
       },
       error: function(xhr) {
+        console.log('Error response:', xhr);
         var msg = 'Terjadi kesalahan saat menambah ke keranjang!';
         if (xhr.responseJSON && xhr.responseJSON.error) {
           msg = xhr.responseJSON.error;

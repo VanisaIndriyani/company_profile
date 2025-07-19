@@ -21,7 +21,7 @@
                 <button class="btn btn-primary w-100" type="submit"><i class="fa fa-search"></i> Cari</button>
             </div>
             <div class="col-md-1 mb-2">
-                <a href="{{ route('admin.messages.index') }}" class="btn btn-secondary w-100">Reset</a>
+                <a href="{{ route('admin.messages') }}" class="btn btn-secondary w-100">Reset</a>
             </div>
         </div>
     </form>
