@@ -50,6 +50,16 @@ Route::get('/contact', function () {
     return view('user.contact');
 });
 
+Route::get('/about', function () {
+    $about = About::all();
+    return view('user.about', compact('about'));
+})->name('about');
+
+Route::get('/order-guide', function () {
+    $cart = session('cart', []);
+    return view('user.order_guide', compact('cart'));
+})->name('order.guide');
+
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 
 Route::get('/category', [CategoryController::class, 'index'])->name('category');

@@ -9,6 +9,7 @@
         background-size:cover;
       }
   </style>
+  <link rel="stylesheet" href="{{ asset('user/css/catalog.css') }}">
 @endsection
 
 @section('hero')
@@ -33,87 +34,113 @@
               <p class="section-description">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque</p>
             </div>
           </div>
-          <div class="d-flex justify-content-center mb-3 gap-2">
-            <a href="{{ route('catalog') }}" class="btn btn-sm text-light mr-3 {{ !$c ? 'btn-primary' : 'btn-secondary' }}">All</a>
-            <a href="{{route('catalog', ['c' => 'vape'])}}" class="btn btn-sm text-light mr-3 {{$c =='vape'?'btn-primary':'btn-secondary'}}">Vape</a>
-            <a href="{{route('catalog', ['c' => 'coffee'])}}" class="btn btn-sm text-light {{$c =='coffee'?'btn-primary':'btn-secondary'}}">Coffee</a>
+          <div class="category-filter">
+            <a href="{{ route('catalog') }}" class="btn {{ !$c ? 'btn-primary' : 'btn-outline-primary' }}">
+              <i class="fa fa-th-large"></i> Semua
+            </a>
+            <a href="{{route('catalog', ['c' => 'vape'])}}" class="btn {{$c =='vape'?'btn-primary':'btn-outline-primary'}}">
+              <i class="fa fa-smoking"></i> Vape
+            </a>
+            <a href="{{route('catalog', ['c' => 'coffee'])}}" class="btn {{$c =='coffee'?'btn-primary':'btn-outline-primary'}}">
+              <i class="fa fa-coffee"></i> Coffee
+            </a>
           </div>
           
           {{-- Alert banner dihapus, hanya pakai modal pop-up --}}
           
-          <div class=" wow fadeInUp">
-            <div class="row" style="">
-              <div class="card-deck">
-                @if (count($catalogs) != 0)
-                  @foreach($catalogs as $item)
-                  <div class="col-lg-4 col-md-6">
-                      <div class="card my-3" style="min-width: 328px;">
-                        <img class="card-img-top" src="{{asset('catalog_image/'.$item->image)}}" alt="Card image cap" style="width:328px; height: 200px; object-fit: cover;">
-                        <div class="card-body">
-                          <h5 class="card-title font-weight-bold">{{$item->name}}</h5>
-                          <p class="card-text">{{$item->description}}</p>
-                          <div class="row mt-3">
-                            <div class="col text-right d-flex">
-                              <h5 class="mr-auto card-text">Harga</h5>
-                              <p class="font-weight-bold" style="color: #2dc997">Rp. {{$item->price}}</p>
+          <div class="wow fadeInUp">
+            <div class="product-grid">
+              @if (count($catalogs) != 0)
+                @foreach($catalogs as $item)
+                <div class="product-card">
+                  <div class="product-image-container">
+                    @if($item->image && file_exists(public_path('catalog_image/'.$item->image)))
+                      <img class="product-image" 
+                           src="{{asset('catalog_image/'.$item->image)}}" 
+                           alt="{{$item->name}}"
+                           onerror="this.parentElement.innerHTML='<div class=\'product-image-placeholder\'><i class=\'fa fa-image fa-2x mb-2\'></i><br>Gambar tidak tersedia</div>'">
+                    @else
+                      <div class="product-image-placeholder">
+                        <div>
+                          <i class="fa fa-image fa-2x mb-2"></i>
+                          <br>Gambar tidak tersedia
+                        </div>
+                      </div>
+                    @endif
+                  </div>
+                  
+                  <div class="product-card-body">
+                    <h5 class="product-title">{{$item->name}}</h5>
+                    <p class="product-description">{{$item->description}}</p>
+                    
+                    <div class="product-price">
+                      Rp {{number_format($item->price)}}
+                    </div>
+                    
+                    <!-- Informasi Stok -->
+                    <div class="stock-badge {{ $item->stock > 0 ? ($item->stock <= 5 ? 'warning' : 'success') : 'danger' }}">
+                      @if($item->stock > 0)
+                        @if($item->stock <= 5)
+                          <i class="fa fa-exclamation-triangle"></i> Stok: {{$item->stock}} (Hampir Habis)
+                        @else
+                          <i class="fa fa-check-circle"></i> Stok: {{$item->stock}}
+                        @endif
+                      @else
+                        <i class="fa fa-times-circle"></i> Stok Habis
+                      @endif
+                    </div>
+                    
+                    <!-- Tombol Tambah ke Keranjang -->
+                    @if($item->stock > 0)
+                      <form method="POST" action="{{ route('cart.add') }}" class="add-to-cart-form">
+                        @csrf
+                        <input type="hidden" name="id" value="{{ $item->id }}">
+                        <input type="hidden" name="name" value="{{ $item->name }}">
+                        <input type="hidden" name="price" value="{{ $item->price }}">
+                        <input type="hidden" name="image" value="{{ $item->image }}">
+                        
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                          <div class="input-group" style="width:120px;">
+                            <div class="input-group-prepend">
+                              <button type="button" class="btn btn-outline-secondary btn-qty-minus" tabindex="-1">-</button>
                             </div>
-                          </div>
-                          <!-- Informasi Stok -->
-                          <div class="row mt-2 mb-2">
-                            <div class="col-12">
-                              @if($item->stock > 0)
-                                @if($item->stock <= 5)
-                                  <span class="badge badge-warning px-2 py-1" style="font-size:0.95em; margin-bottom:4px;">Stok: {{$item->stock}} (Hampir Habis)</span>
-                                @else
-                                  <span class="badge badge-success px-2 py-1" style="font-size:0.95em; margin-bottom:4px;">Stok: {{$item->stock}}</span>
-                                @endif
-                              @else
-                                <span class="badge badge-danger px-2 py-1 d-block text-center" style="font-size:0.95em; margin-bottom:4px;">Stok Habis</span>
-                              @endif
-                            </div>
-                          </div>
-                          <!-- Tombol Tambah ke Keranjang -->
-                          <div class="row">
-                            <div class="col-12 d-flex justify-content-{{ $item->stock > 0 ? 'start' : 'center' }} align-items-center">
-                              @if($item->stock > 0)
-                                <form method="POST" action="{{ route('cart.add') }}" class="add-to-cart-form d-flex align-items-center w-100" style="gap:8px;">
-                                  @csrf
-                                  <input type="hidden" name="id" value="{{ $item->id }}">
-                                  <input type="hidden" name="name" value="{{ $item->name }}">
-                                  <input type="hidden" name="price" value="{{ $item->price }}">
-                                  <input type="hidden" name="image" value="{{ $item->image }}">
-                                  <div class="input-group" style="width:120px; flex-wrap:nowrap;">
-                                    <div class="input-group-prepend">
-                                      <button type="button" class="btn btn-outline-secondary btn-qty-minus" tabindex="-1">-</button>
-                                    </div>
-                                    <input type="number" name="qty" value="1" min="1" class="form-control text-center input-qty" style="width:70px;" data-stock="{{ $item->stock }}" autocomplete="off">
-                                    <div class="input-group-append">
-                                      <button type="button" class="btn btn-outline-secondary btn-qty-plus" tabindex="-1">+</button>
-                                    </div>
-                                  </div>
-                                  <button class="btn btn-success btn-sm ml-2 px-3 font-weight-bold"><i class="fa fa-shopping-cart"></i> Tambah ke Keranjang</button>
-                                </form>
-                              @else
-                                <button class="btn btn-secondary btn-sm w-100" disabled>Stok Habis</button>
-                              @endif
+                            <input type="number" name="qty" value="1" min="1" class="form-control text-center input-qty" data-stock="{{ $item->stock }}" autocomplete="off">
+                            <div class="input-group-append">
+                              <button type="button" class="btn btn-outline-secondary btn-qty-plus" tabindex="-1">+</button>
                             </div>
                           </div>
                         </div>
-                      </div>
+                        
+                        <button class="btn btn-success btn-block font-weight-bold">
+                          <i class="fa fa-shopping-cart"></i> Tambah ke Keranjang
+                        </button>
+                      </form>
+                    @else
+                      <button class="btn btn-secondary btn-block" disabled>
+                        <i class="fa fa-ban"></i> Stok Habis
+                      </button>
+                    @endif
                   </div>
-                  @endforeach
-                @else
-                  <div class="mt-5 d-flex align-items-center justify-content-center" style="height: 10vh;">
-                    <div class="code font-weight-bold text-center" style="border-right: 3px solid; font-size: 60px; padding: 0 15px 0 15px;">
+                </div>
+                                @endforeach
+              @else
+                <div class="col-12 text-center py-5">
+                  <div class="d-flex align-items-center justify-content-center mb-4">
+                    <div class="code font-weight-bold text-center" style="border-right: 3px solid; font-size: 60px; padding: 0 15px 0 15px; color: #6c757d;">
                       404
                     </div>
-                    <div class="text-center" style="padding: 10px; font-size: 46px;">
+                    <div class="text-center" style="padding: 10px; font-size: 46px; color: #6c757d;">
                       Not Found
                     </div>
                   </div>
-                @endif
-              </div>
+                  <p class="text-muted">Tidak ada produk yang ditemukan.</p>
+                  <a href="{{ route('catalog') }}" class="btn btn-primary">
+                    <i class="fa fa-refresh"></i> Lihat Semua Produk
+                  </a>
+                </div>
+              @endif
             </div>
+          </div>
           </div>
         </div>
       </div>
@@ -125,12 +152,25 @@
 @push('scripts')
 <script>
 function showAlertModal(msg, isSuccess = false) {
-  $('#alertModalLabel').html(isSuccess ? '<i class="fa fa-check-circle"></i> Sukses' : 'Peringatan');
+  $('#alertModalLabel').html(isSuccess ? '<i class="fa fa-check-circle"></i> Sukses' : '<i class="fa fa-exclamation-triangle"></i> Peringatan');
   $('#alertModal .modal-header').removeClass('bg-success').removeClass('bg-danger').addClass(isSuccess ? 'bg-success' : 'bg-danger');
   $('#alertModalBody').text(msg);
-  $('#alertModal .modal-content').removeClass('shake');
-  void $('#alertModal .modal-content')[0].offsetWidth;
-  $('#alertModal .modal-content').addClass('shake');
+  
+  // Update button based on alert type
+  var footerBtn = $('#alertModal .modal-footer .btn');
+  if (isSuccess) {
+    footerBtn.removeClass('btn-danger').addClass('btn-success').html('<i class="fa fa-check"></i> Baik');
+  } else {
+    footerBtn.removeClass('btn-success').addClass('btn-danger').html('<i class="fa fa-times"></i> Tutup');
+  }
+  
+  // Add shake animation only for errors
+  if (!isSuccess) {
+    $('#alertModal .modal-content').removeClass('shake');
+    void $('#alertModal .modal-content')[0].offsetWidth;
+    $('#alertModal .modal-content').addClass('shake');
+  }
+  
   $('#alertModal').modal('show');
 }
 $(function() {
@@ -175,15 +215,20 @@ $(function() {
         // Show success message
         showAlertModal(res.success || 'Produk berhasil ditambahkan ke keranjang!', true);
         
-        // Update cart count in header
-        var cartCount = $('a[data-target="#cartModal"] span').length > 0 ? 
-          parseInt($('a[data-target="#cartModal"] span').text()) : 0;
-        cartCount++;
+        // Update cart count in header - get actual count from server response
+        var newCartCount = res.cart_count || 0;
         
         if ($('a[data-target="#cartModal"] span').length > 0) {
-          $('a[data-target="#cartModal"] span').text(cartCount);
+          $('a[data-target="#cartModal"] span').text(newCartCount);
         } else {
-          $('a[data-target="#cartModal"]').append('<span style="position:absolute;top:-8px;right:-10px;background:#e74c3c;color:#fff;border-radius:50%;padding:2px 7px;font-size:11px;">' + cartCount + '</span>');
+          $('a[data-target="#cartModal"]').append('<span style="position:absolute;top:-8px;right:-10px;background:#e74c3c;color:#fff;border-radius:50%;padding:2px 7px;font-size:11px;">' + newCartCount + '</span>');
+        }
+        
+        // Hide cart count badge if cart is empty
+        if (newCartCount <= 0) {
+          $('a[data-target="#cartModal"] span').hide();
+        } else {
+          $('a[data-target="#cartModal"] span').show();
         }
         
         // Update cart modal content

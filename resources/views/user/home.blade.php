@@ -17,6 +17,8 @@
           margin-right: 6.5px;
           width: 100%;
         }
+        
+
     </style>
 @endsection
 
@@ -79,6 +81,8 @@
 
         </div>
       </section><!-- #services -->
+
+
 
       <!--========================== Call To Action Section ============================-->
       <section id="call-to-action">

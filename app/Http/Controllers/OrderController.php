@@ -47,11 +47,17 @@ class OrderController extends Controller
             'qty' => $request->qty,
             'price' => $request->price,
             'image' => $request->image,
+            'category' => $catalog->category, // Add category information
         ];
         session(['cart' => $cart]);
         
         if ($request->ajax()) {
-            return response()->json(['success' => 'Produk berhasil ditambahkan ke keranjang!']);
+            $cartCount = count(session('cart', []));
+            return response()->json([
+                'success' => true,
+                'message' => 'Produk berhasil ditambahkan ke keranjang!',
+                'cart_count' => $cartCount
+            ]);
         }
         return redirect()->route('cart');
     }
@@ -61,6 +67,16 @@ class OrderController extends Controller
         $cart = session('cart', []);
         unset($cart[$request->index]);
         session(['cart' => array_values($cart)]);
+        
+        if ($request->ajax()) {
+            $cartCount = count(session('cart', []));
+            return response()->json([
+                'success' => true,
+                'message' => 'Produk berhasil dihapus dari keranjang!',
+                'cart_count' => $cartCount
+            ]);
+        }
+        
         return redirect()->route('cart');
     }
 
@@ -75,6 +91,22 @@ class OrderController extends Controller
         $cart = session('cart', []);
         if (empty($cart)) {
             return redirect()->route('cart')->with('error', 'Keranjang kosong!');
+        }
+        
+        // Check if cart has coffee products
+        $hasCoffee = false;
+        foreach ($cart as $item) {
+            if (isset($item['category'])) {
+                if (strtolower($item['category']) == 'kopi' || strtolower($item['category']) == 'coffee') {
+                    $hasCoffee = true;
+                    break;
+                }
+            }
+        }
+        
+        // Validate table number for coffee orders
+        if ($hasCoffee && (empty($request->no_meja) || $request->no_meja == 'N/A')) {
+            return redirect()->route('checkout')->with('error', 'Nomor meja wajib diisi untuk pesanan kopi!');
         }
         
         // Validasi stok sebelum checkout
@@ -108,7 +140,13 @@ class OrderController extends Controller
         }
         
         session()->forget('cart');
-        return redirect()->route('cart')->with('success', 'Pesanan berhasil! Tunggu konfirmasi admin.');
+        
+        // Different success message based on product type
+        if ($hasCoffee) {
+            return redirect()->route('cart')->with('success', 'Pesanan kopi berhasil! Silakan tunggu di meja ' . $request->no_meja . '.');
+        } else {
+            return redirect()->route('cart')->with('success', 'Pesanan vape berhasil! Silakan ambil di counter.');
+        }
     }
 
     public function userOrders(Request $request)

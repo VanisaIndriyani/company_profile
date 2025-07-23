@@ -49,9 +49,11 @@
       <nav id="nav-menu-container">
         <ul class="nav-menu">
           <li class="{{$url=='home'?'menu-active':''}}"><a href="{{url('home')}}">Home</a></li>
+          <li class="{{$url=='about'?'menu-active':''}}"><a href="{{url('about')}}">About</a></li>
           <li class="{{$url=='blog'?'menu-active':''}}"><a href="{{url('blog')}}">Blog</a></li>
           <li class="{{$url=='catalog'?'menu-active':''}}"><a href="{{url('catalog')}}">Catalog</a></li>
           <li class="{{$url=='contact'?'menu-active':''}}"><a href="{{url('contact')}}">Contact </a></li>
+         
           <li>
             <a href="#" data-toggle="modal" data-target="#cartModal" style="position:relative">
               <i class="fa fa-shopping-cart"></i>
@@ -113,26 +115,7 @@
             </div>
         @endif
         
-        @if(count($cart) > 0)
-          <table class="table table-bordered">
-            <thead><tr><th>Produk</th><th>Qty</th><th>Harga</th><th>Subtotal</th></tr></thead>
-            <tbody>
-              @foreach($cart as $item)
-                <tr>
-                  <td>{{ $item['name'] }}</td>
-                  <td>{{ $item['qty'] }}</td>
-                  <td>Rp{{ number_format($item['price']) }}</td>
-                  <td>Rp{{ number_format($item['qty'] * $item['price']) }}</td>
-                </tr>
-              @endforeach
-            </tbody>
-          </table>
-          <div class="text-right">
-            <a href="#" class="btn btn-warning" onclick="$('#cartModal').modal('hide');$('#checkoutModal').modal('show');return false;">Lihat Detail & Checkout</a>
-          </div>
-        @else
-          <div class="text-center text-muted">Keranjang kosong.</div>
-        @endif
+        @include('user.component.cart_table')
       </div>
     </div>
   </div>
@@ -281,41 +264,223 @@ $(function() {
     });
     return false; // cegah bubbling
   });
+  
+  // Handle remove cart item
+  $(document).on('click', '.remove-cart-item', function() {
+    var index = $(this).data('index');
+    var button = $(this);
+    
+    $.ajax({
+      url: "{{ route('cart.remove') }}",
+      method: 'POST',
+      data: {
+        index: index,
+        _token: $('meta[name="csrf-token"]').attr('content')
+      },
+      success: function(res) {
+        // Update cart count in header
+        var newCartCount = res.cart_count || 0;
+        
+        if ($('a[data-target="#cartModal"] span').length > 0) {
+          $('a[data-target="#cartModal"] span').text(newCartCount);
+        } else {
+          $('a[data-target="#cartModal"]').append('<span style="position:absolute;top:-8px;right:-10px;background:#e74c3c;color:#fff;border-radius:50%;padding:2px 7px;font-size:11px;">' + newCartCount + '</span>');
+        }
+        
+        // Hide cart count badge if cart is empty
+        if (newCartCount <= 0) {
+          $('a[data-target="#cartModal"] span').hide();
+        } else {
+          $('a[data-target="#cartModal"] span').show();
+        }
+        
+        // Update cart modal content
+        $.get("{{ route('cart') }}", function(data) {
+          $('#cartModal .modal-body').html(data);
+        });
+        
+        // Show success message
+        showAlertModal(res.success || 'Produk berhasil dihapus dari keranjang!', true);
+      },
+      error: function(xhr) {
+        var msg = 'Terjadi kesalahan saat menghapus dari keranjang!';
+        if (xhr.responseJSON && xhr.responseJSON.error) {
+          msg = xhr.responseJSON.error;
+        }
+        showAlertModal(msg);
+      }
+    });
+  });
 });
 </script>
 
 <!-- Modal Alert Pop Up -->
 <style>
+  #alertModal .modal-content {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    overflow: hidden;
+  }
+  
   #alertModal .modal-header {
-    background: #e74c3c !important;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
     color: #fff;
     justify-content: center;
     border-bottom: none;
+    padding: 2rem 2rem 1.5rem 2rem;
+    position: relative;
   }
+  
+  #alertModal .modal-header.bg-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+  }
+  
+  #alertModal .modal-header.bg-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+  }
+  
+  #alertModal .modal-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.6), rgba(255,255,255,0.3));
+  }
+  
   #alertModal .modal-title {
-    font-size: 2.2em;
-    font-weight: bold;
+    font-size: 1.8rem;
+    font-weight: 700;
     display: flex;
     align-items: center;
     gap: 12px;
+    letter-spacing: 0.5px;
   }
+  
+  #alertModal .modal-title i {
+    font-size: 2rem;
+    animation: bounce 0.6s ease-in-out;
+  }
+  
   #alertModal .modal-body {
     text-align: center;
-    font-size: 1.2em;
-    padding-top: 0;
-    padding-bottom: 0.5em;
+    font-size: 1.1rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    color: #495057;
+    line-height: 1.6;
   }
+  
   #alertModal .close {
-    font-size: 2em;
+    font-size: 1.5rem;
     opacity: 1;
     color: #fff;
-    margin-top: -10px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
   }
+  
+  #alertModal .close:hover {
+    background: rgba(255,255,255,0.3);
+    transform: rotate(90deg);
+  }
+  
   #alertModal .modal-footer {
     border-top: none;
     justify-content: center;
+    padding: 1.5rem 2rem 2rem 2rem;
+    background: white;
   }
-  /* Shake animation */
+  
+  #alertModal .btn {
+    border-radius: 25px;
+    padding: 12px 30px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 1rem;
+  }
+  
+  #alertModal .btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+  }
+  
+  #alertModal .btn-success:hover {
+    background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+  }
+  
+  #alertModal .btn-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+  }
+  
+  #alertModal .btn-danger:hover {
+    background: linear-gradient(135deg, #c82333 0%, #dc3545 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+  }
+  
+  /* Success Animation */
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-10px);
+    }
+    60% {
+      transform: translateY(-5px);
+    }
+  }
+  
+  @keyframes slideInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  #alertModal.show .modal-content {
+    animation: slideInDown 0.4s ease-out;
+  }
+  
+  #alertModal .modal-body {
+    animation: slideInUp 0.4s ease-out 0.1s both;
+  }
+  
+  /* Shake animation for errors */
   @keyframes shake {
     0% { transform: translateX(0); }
     20% { transform: translateX(-10px); }
@@ -324,8 +489,26 @@ $(function() {
     80% { transform: translateX(10px); }
     100% { transform: translateX(0); }
   }
+  
   .shake {
     animation: shake 0.5s;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    #alertModal .modal-title {
+      font-size: 1.5rem;
+    }
+    
+    #alertModal .modal-body {
+      font-size: 1rem;
+      padding: 1.5rem;
+    }
+    
+    #alertModal .btn {
+      padding: 10px 25px;
+      font-size: 0.9rem;
+    }
   }
 </style>
 <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
@@ -333,7 +516,7 @@ $(function() {
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="alertModalLabel"></h5>
-        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -341,7 +524,9 @@ $(function() {
         <!-- Pesan akan diisi via JS -->
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger px-4" data-dismiss="modal">Tutup</button>
+        <button type="button" class="btn btn-success" data-dismiss="modal">
+          <i class="fa fa-check"></i> Baik
+        </button>
       </div>
     </div>
   </div>

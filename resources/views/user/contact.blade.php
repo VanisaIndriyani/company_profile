@@ -69,24 +69,31 @@
           <div class="contact-info-box bg-white p-4 rounded shadow-sm text-center mx-auto" style="max-width:500px;">
             <div class="mb-4">
               <div class="d-flex align-items-center justify-content-center mb-3">
-                <span style="font-size:2rem;color:#2ecc71;" class="mr-3"><i class="fa fa-map-marker"></i></span>
-                <span class="text-left">Gedong Tengen,<br>Daerah Istimewa Yogyakarta</span>
+                <span style="font-size:2rem;color:#25D366;" class="mr-3"><i class="fa fa-whatsapp"></i></span>
+                <span class="text-left">
+                  <a href="https://wa.me/6282177760504" target="_blank" style="color:#25D366;font-weight:bold;text-decoration:none;">082177760504</a>
+                </span>
               </div>
               <div class="d-flex align-items-center justify-content-center mb-3">
-                <span style="font-size:2rem;color:#2ecc71;" class="mr-3"><i class="fa fa-envelope"></i></span>
-                <span class="text-left">danyadhi4149@gmail.com</span>
+                <span style="font-size:2rem;color:#ea4335;" class="mr-3"><i class="fa fa-envelope"></i></span>
+                <span class="text-left">
+                  <a href="mailto:coffefourjo@gmail.com" style="color:#ea4335;font-weight:bold;text-decoration:none;">coffefourjo@gmail.com</a>
+                </span>
               </div>
               <div class="d-flex align-items-center justify-content-center mb-3">
-                <span style="font-size:2rem;color:#2ecc71;" class="mr-3"><i class="fa fa-phone"></i></span>
-                <span class="text-left">0831-6179-3990</span>
+                <span style="font-size:2rem;color:#C13584;" class="mr-3"><i class="fa fa-instagram"></i></span>
+                <span class="text-left">
+                  <a href="https://instagram.com/vapefourjo" target="_blank" style="color:#C13584;font-weight:bold;text-decoration:none;">@vapefourjo</a>
+                  &nbsp;|&nbsp;
+                  <a href="https://instagram.com/fourjo_coffee" target="_blank" style="color:#C13584;font-weight:bold;text-decoration:none;">@fourjo_coffee</a>
+                </span>
               </div>
             </div>
             <div class="social-links d-flex justify-content-center gap-2 mt-3">
-              <a href="#" class="d-flex align-items-center justify-content-center rounded-circle mr-2" style="width:44px;height:44px;background:#222;color:#fff;font-size:1.4rem;"><i class="fa fa-twitter"></i></a>
-              <a href="#" class="d-flex align-items-center justify-content-center rounded-circle mr-2" style="width:44px;height:44px;background:#222;color:#fff;font-size:1.4rem;"><i class="fa fa-facebook"></i></a>
-              <a href="#" class="d-flex align-items-center justify-content-center rounded-circle mr-2" style="width:44px;height:44px;background:#222;color:#fff;font-size:1.4rem;"><i class="fa fa-instagram"></i></a>
-              <a href="#" class="d-flex align-items-center justify-content-center rounded-circle mr-2" style="width:44px;height:44px;background:#222;color:#fff;font-size:1.4rem;"><i class="fa fa-google-plus"></i></a>
-              <a href="#" class="d-flex align-items-center justify-content-center rounded-circle" style="width:44px;height:44px;background:#222;color:#fff;font-size:1.4rem;"><i class="fa fa-linkedin"></i></a>
+              <a href="https://wa.me/6282177760504" class="d-flex align-items-center justify-content-center rounded-circle mr-2" style="width:44px;height:44px;background:#25D366;color:#fff;font-size:1.4rem;" target="_blank"><i class="fa fa-whatsapp"></i></a>
+              <a href="mailto:coffefourjo@gmail.com" class="d-flex align-items-center justify-content-center rounded-circle mr-2" style="width:44px;height:44px;background:#ea4335;color:#fff;font-size:1.4rem;"><i class="fa fa-envelope"></i></a>
+              <a href="https://instagram.com/vapefourjo" class="d-flex align-items-center justify-content-center rounded-circle mr-2" style="width:44px;height:44px;background:#C13584;color:#fff;font-size:1.4rem;" target="_blank"><i class="fa fa-instagram"></i></a>
+              <a href="https://instagram.com/fourjo_coffee" class="d-flex align-items-center justify-content-center rounded-circle" style="width:44px;height:44px;background:#C13584;color:#fff;font-size:1.4rem;" target="_blank"><i class="fa fa-instagram"></i></a>
             </div>
           </div>
         </div>
