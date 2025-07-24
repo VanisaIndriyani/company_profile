@@ -2,8 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\HomeController;
-use App\Models\Article;
+use App\Http\Controllers\User\BlogController;
+use App\Http\Controllers\User\CatalogController;
 use App\Http\Controllers\User\CategoryController;
+use App\Models\Article;
 use App\Models\Catalog;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\OrderController;
@@ -12,39 +14,20 @@ use App\Models\Category;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\ContactMessageController;
 
-Route::get('/', function () {
-    $about = About::all();
-    $categories = Category::all();
-    return view('user.home', compact('about', 'categories'));
-});
+Route::get('/', [HomeController::class, 'index']);
 
 Route::get('/home', [HomeController::class, 'index']);
 
-Route::get('/blog', function () {
-    $articles = Article::all();
-    $recents = Article::orderBy('created_at', 'desc')->take(5)->get();
-    return view('user.blog', compact('articles', 'recents'));
-})->name('blog');
-
-Route::get('/blog/{slug}', function ($slug) {
-    $article = Article::where('slug', $slug)->firstOrFail();
-    return view('user.blog_show', compact('article'));
-})->name('blog.show');
+Route::get('/blog', [BlogController::class, 'index'])->name('blog');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
 Route::get('/ajax/blog/{article}', function($id) {
     $article = \App\Models\Article::findOrFail($id);
     return view('user.blog_show', compact('article'))->render();
 })->name('ajax.blog.show');
 
-Route::get('/catalog', function (\Illuminate\Http\Request $request) {
-    $c = $request->input('c');
-    if ($c) {
-        $catalogs = \App\Models\Catalog::whereRaw('LOWER(category) = ?', [strtolower($c)])->get();
-    } else {
-        $catalogs = \App\Models\Catalog::all();
-    }
-    return view('user.catalog', compact('catalogs'));
-})->name('catalog');
+Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog');
+Route::get('/catalog/{id}', [CatalogController::class, 'show'])->name('catalog.show');
 
 Route::get('/contact', function () {
     return view('user.contact');
